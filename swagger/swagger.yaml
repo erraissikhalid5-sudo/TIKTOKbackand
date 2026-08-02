@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: TikTok Downloader Backend API
+  description: >
+    Robust backend service for resolving TikTok video metadata and downloading
+    videos as MP4 or extracting audio as MP3.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+  /resolve:
+    post:
+      summary: Resolve TikTok video metadata without downloading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url:
+                  type: string
+                  example: https://www.tiktok.com/@username/video/1234567890123456789
+      responses:
+        '200':
+          description: Metadata resolved successfully
+        '422':
+          description: Extraction failed
+  /download:
+    post:
+      summary: Download a TikTok video as MP4 or MP3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, format]
+              properties:
+                url:
+                  type: string
+                  example: https://vt.tiktok.com/ABCDEFG/
+                format:
+                  type: string
+                  enum: [mp4, mp3]
+      responses:
+        '201':
+          description: File prepared successfully, returns a download URL
+        '400':
+          description: Validation error
+        '413':
+          description: File exceeds max allowed size
+        '422':
+          description: Extraction failed
+  /files/{fileName}:
+    get:
+      summary: Download the prepared MP4/MP3 file
+      parameters:
+        - in: path
+          name: fileName
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File stream
+        '404':
+          description: File not found or expired

@@ -1,0 +1,18 @@
+# Alternative build configuration if you switch Railway's builder from
+# "DOCKERFILE" to "NIXPACKS" in railway.json / the Railway dashboard.
+# Installs ffmpeg at the system level since fluent-ffmpeg needs a binary.
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "ffmpeg"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node dist/server.js"
+
+[variables]
+NODE_ENV = "production"
